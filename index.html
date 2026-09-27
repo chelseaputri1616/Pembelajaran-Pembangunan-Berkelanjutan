@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Geografi: Implementasi Pembangunan Berkelanjutan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #090d16;
+            background-image: linear-gradient(rgba(9, 13, 22, 0.68), rgba(9, 13, 22, 0.78)), url('./asset/ltr.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f1f5f9;
+        }
+        .slide-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        .hide-slide {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        .active-slide {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Soft rose theme for the learning interface. */
+        .bg-emerald-600 { background-color: #db2777 !important; }
+        .bg-emerald-500 { background-color: #ec4899 !important; }
+        .bg-teal-600 { background-color: #c026d3 !important; }
+        .bg-teal-500 { background-color: #d946ef !important; }
+        .text-emerald-400 { color: #f472b6 !important; }
+        .text-emerald-300 { color: #f9a8d4 !important; }
+        .text-teal-400 { color: #e879f9 !important; }
+        .text-teal-300 { color: #f0abfc !important; }
+        .text-cyan-400 { color: #f0abfc !important; }
+        .border-emerald-500 { border-color: #ec4899 !important; }
+        .border-emerald-500\/20 { border-color: rgb(236 72 153 / 0.2) !important; }
+        .border-emerald-500\/30 { border-color: rgb(236 72 153 / 0.3) !important; }
+        .border-teal-500 { border-color: #d946ef !important; }
+        .from-emerald-500 { --tw-gradient-from: #ec4899 var(--tw-gradient-from-position) !important; }
+        .to-teal-500 { --tw-gradient-to: #d946ef var(--tw-gradient-to-position) !important; }
+        .to-teal-300 { --tw-gradient-to: #f0abfc var(--tw-gradient-to-position) !important; }
+        .shadow-emerald-500\/20 { --tw-shadow-color: rgb(236 72 153 / 0.2) !important; }
+        .shadow-emerald-500\/25 { --tw-shadow-color: rgb(236 72 153 / 0.25) !important; }
+        .shadow-emerald-600\/25 { --tw-shadow-color: rgb(219 39 119 / 0.25) !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 selection:bg-emerald-500 selection:text-white">
+
+    <!-- Top Navbar -->
+    <header class="w-full bg-transparent backdrop-blur-md border-b border-slate-800/40 sticky top-0 z-50 px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl bg-transparent flex items-center justify-center font-black">
+                <img src="./asset/logo.png" alt="Logo Universitas Negeri Padang" class="w-12 h-12 object-contain rounded-lg">
+            </div>
+            <div>
+                <h1 class="text-sm sm:text-base font-extrabold text-white tracking-wide">UNIVERSITAS NEGERI PADANG</h1>
+                <p class="text-xs text-emerald-400 font-semibold">Geografi Nusantara • Kelas XII</p>
+            </div>
+        </div>
+
+        <!-- Slide Indicators -->
+        <div class="flex items-center gap-1 sm:gap-2 bg-slate-800/80 p-1.5 rounded-full border border-slate-700/60 overflow-x-auto">
+            <button onclick="goToSlide(0)" id="indicator-0" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all bg-emerald-600 text-white shadow whitespace-nowrap">Slide 1: Beranda</button>
+            <button onclick="goToSlide(1)" id="indicator-1" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all text-slate-400 hover:text-white whitespace-nowrap">Slide 2: Materi</button>
+            <button onclick="goToSlide(2)" id="indicator-2" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all text-slate-400 hover:text-white whitespace-nowrap">Slide 3: Kuis (15 Soal)</button>
+            <button onclick="goToSlide(3)" id="indicator-3" disabled class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all text-slate-500 opacity-50 cursor-not-allowed whitespace-nowrap">Slide 4: Sertifikat</button>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span id="slide-counter-badge" class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">
+                Slide 1 / 4
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+
+        <!-- ============================================== -->
+        <!-- SLIDE 1: BERANDA & INFORMASI PROFIL -->
+        <!-- ============================================== -->
+        <div id="slide-0" class="slide-container active-slide w-full flex-col lg:flex-row items-center justify-between gap-10 bg-transparent p-6 sm:p-12 relative overflow-hidden slide-transition">
+            
+            <div class="absolute -right-20 -top-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex-1 z-10 max-w-2xl">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
+                    <i class="fa-solid fa-graduation-cap"></i> Media Pembelajaran Interaktif Geografi
+                </div>
+                <p class="text-sm font-bold text-emerald-300 mb-5">
+                    Chelsea Maizani Putri <span class="text-slate-500 mx-1">|</span> NIM: 25045092
+                </p>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6">
+                    Implementasi Pembangunan <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Berkelanjutan</span>
+                </h2>
+                <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-8">
+                    Eksplorasi mendalam tata ruang, keseimbangan ekologis, keadilan sosial, dan pertumbuhan ekonomi berkelanjutan berbasis perspektif spasial geografi.
+                </p>
+
+                <!-- Editable Profile Box -->
+                <div class="bg-slate-800/60 border border-slate-700/80 p-5 sm:p-6 rounded-2xl mb-8 backdrop-blur-sm space-y-4 shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400"><i class="fa-solid fa-id-card mr-1.5"></i> Identitas Pengguna / Siswa</span>
+                        <span class="text-[11px] text-slate-400 italic">Dapat disesuaikan langsung</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Nama Lengkap / Kelompok</label>
+                            <input type="text" id="input-nama" required placeholder="Masukkan nama lengkap / kelompok" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Asal Sekolah / Kelas</label>
+                            <input type="text" id="input-sekolah" required placeholder="Masukkan asal sekolah / kelas" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
+                    </div>
+                </div>
+
+                <p id="profile-error" class="hidden text-sm text-rose-400 font-semibold mb-6" role="alert">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Silakan isi nama dan asal sekolah / kelas terlebih dahulu.
+                </p>
+
+                <button onclick="goToSlide(1)" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 font-extrabold px-8 py-4 rounded-2xl shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5">
+                    <span>Mulai Eksplorasi Materi</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 2: MATERI PEMBELAJARAN LENGKAP -->
+        <!-- ============================================== -->
+        <div id="slide-1" class="slide-container hide-slide w-full flex-col bg-transparent p-6 sm:p-10 slide-transition max-h-[84vh] overflow-y-auto">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-slate-800 pb-6">
+                <div>
+                    <span class="text-emerald-400 text-xs font-bold uppercase tracking-wider bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Modul Belajar Geografi</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Implementasi Pembangunan Berkelanjutan</h2>
+                </div>
+                <p class="text-slate-400 text-sm">Pilih topik materi di bawah untuk membaca penjelasan mendalam.</p>
+            </div>
+
+            <div class="bg-gradient-to-tr from-emerald-500/10 to-teal-500/20 rounded-3xl border border-emerald-500/30 p-6 sm:p-8 mb-8 shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="bg-emerald-500/20 text-emerald-300 text-xs px-3 py-1 rounded-full font-semibold border border-emerald-500/30">SDGs &amp; Spasial</span>
+                    <i class="fa-solid fa-compass text-emerald-400 text-3xl animate-spin" style="animation-duration: 25s;"></i>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    <div class="bg-slate-900/90 border border-slate-700/80 p-3.5 rounded-xl flex items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">01</div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Konsep &amp; Prinsip Utama</h4>
+                            <p class="text-[11px] text-slate-400">Brundtland &amp; keadilan antar-generasi</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-700/80 p-3.5 rounded-xl flex items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-sm">02</div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Trinitas Pilar Pembangunan</h4>
+                            <p class="text-[11px] text-slate-400">Sosial, Ekonomi, Ekologi &amp; Tata Kelola</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-700/80 p-3.5 rounded-xl flex items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">03</div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Evaluasi &amp; Kuis Interaktif</h4>
+                            <p class="text-[11px] text-slate-400">15 Soal (Pilihan, Kelompok, &amp; Matching)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Material Navigation Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div onclick="switchMateriTab(1)" id="m-btn-1" class="cursor-pointer bg-slate-800/90 border-2 border-emerald-500 rounded-2xl p-5 transition-all shadow-md group">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white mb-1">1. Konsep &amp; Definisi</h3>
+                    <p class="text-xs text-slate-300">Laporan Brundtland &amp; prinsip dasar.</p>
+                </div>
+
+                <div onclick="switchMateriTab(2)" id="m-btn-2" class="cursor-pointer bg-slate-800/50 border-2 border-slate-700 hover:border-teal-500 rounded-2xl p-5 transition-all shadow-md group">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white mb-1">2. Empat Pilar Utama</h3>
+                    <p class="text-xs text-slate-300">Sosial, Ekonomi, Ekologi, Tata Kelola.</p>
+                </div>
+
+                <div onclick="switchMateriTab(3)" id="m-btn-3" class="cursor-pointer bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-500 rounded-2xl p-5 transition-all shadow-md group">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-earth-asia"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white mb-1">3. Contoh di Indonesia</h3>
+                    <p class="text-xs text-slate-300">Energi surya, kota hijau, dan 3R.</p>
+                </div>
+
+                <div onclick="switchMateriTab(4)" id="m-btn-4" class="cursor-pointer bg-slate-800/50 border-2 border-slate-700 hover:border-amber-500 rounded-2xl p-5 transition-all shadow-md group">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white mb-1">4. Tantangan &amp; Strategi</h3>
+                    <p class="text-xs text-slate-300">Alih fungsi lahan &amp; mitigasi iklim.</p>
+                </div>
+            </div>
+
+            <!-- Material Tab Contents -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                
+                <!-- Tab 1: Konsep -->
+                <div id="m-content-1" class="space-y-4">
+                    <img src="./asset/materi1.jpg" alt="Ilustrasi konsep pembangunan berkelanjutan" class="w-full h-auto object-contain rounded-2xl border border-emerald-500/30 shadow-lg">
+                    <h4 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i> Konsep Dasar &amp; Definisi Esensial
+                    </h4>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Pembangunan berkelanjutan (<i>sustainable development</i>) pertama kali didefinisikan secara universal dalam laporan PBB <i>Our Common Future</i> (Laporan Brundtland, 1987) sebagai:
+                    </p>
+                    <blockquote class="bg-slate-900 border-l-4 border-emerald-500 p-4 rounded-r-xl text-sm italic text-slate-200">
+                        "Pembangunan yang memenuhi kebutuhan masa kini tanpa mengorbankan kemampuan generasi mendatang untuk memenuhi kebutuhan mereka sendiri."
+                    </blockquote>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-xs font-bold text-emerald-400 uppercase mb-1">Keadilan Intergenerasi</h5>
+                            <p class="text-xs text-slate-300">Memastikan eksploitasi sumber daya alam saat ini tidak meninggalkan kerusakan atau krisis bagi anak cucu di masa depan.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-xs font-bold text-emerald-400 uppercase mb-1">Perspektif Spasial Geografi</h5>
+                            <p class="text-xs text-slate-300">Pendekatan keruangan untuk menganalisis lokasi, interaksi wilayah, dan kesesuaian lahan guna mencegah degradasi lingkungan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Empat Pilar -->
+                <div id="m-content-2" class="space-y-4 hidden">
+                    <img src="./asset/materi2.jpg" alt="Ilustrasi empat pilar pembangunan berkelanjutan" class="w-full h-auto object-contain rounded-2xl border border-teal-500/30 shadow-lg">
+                    <h4 class="text-lg font-bold text-teal-400 flex items-center gap-2">
+                        <i class="fa-solid fa-cubes"></i> Empat Pilar Utama Pembangunan Berkelanjutan
+                    </h4>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Kerangka modern pembangunan berkelanjutan didukung oleh empat pilar yang saling bersinergi dan tidak dapat dipisahkan:
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-amber-400 mb-1"><i class="fa-solid fa-users mr-2"></i> 1. Pilar Sosial</h5>
+                            <p class="text-xs text-slate-300">Fokus pada pengentasan kemiskinan, pemerataan pendidikan, layanan kesehatan berkualitas, dan inklusivitas masyarakat.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-blue-400 mb-1"><i class="fa-solid fa-coins mr-2"></i> 2. Pilar Ekonomi</h5>
+                            <p class="text-xs text-slate-300">Pertumbuhan ekonomi inklusif, penciptaan lapangan kerja hijau, efisiensi sumber daya, dan stabilitas finansial jangka panjang.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-emerald-400 mb-1"><i class="fa-solid fa-seedling mr-2"></i> 3. Pilar Ekologi (Lingkungan)</h5>
+                            <p class="text-xs text-slate-300">Konservasi keanekaragaman hayati, perlindungan daerah aliran sungai (DAS), penurunan emisi karbon, dan daya dukung alam.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-cyan-400 mb-1"><i class="fa-solid fa-scale-balanced mr-2"></i> 4. Pilar Tata Kelola (Governance)</h5>
+                            <p class="text-xs text-slate-300">Penegakan hukum lingkungan, transparansi kebijakan tata ruang, partisipasi publik, dan antikorupsi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Contoh di Indonesia -->
+                <div id="m-content-3" class="space-y-4 hidden">
+                    <img src="./asset/materi%203.jpg" alt="Ilustrasi penerapan pembangunan berkelanjutan di Indonesia" class="w-full h-auto object-contain rounded-2xl border border-cyan-500/30 shadow-lg">
+                    <h4 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                        <i class="fa-solid fa-earth-asia"></i> Contoh Penerapan Nyata di Indonesia
+                    </h4>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Implementasi pembangunan berkelanjutan di berbagai wilayah di Indonesia diwujudkan melalui program strategis nasional maupun lokal:
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-white mb-2"><i class="fa-solid fa-solar-panel text-emerald-400 mr-2"></i> Energi Terbarukan</h5>
+                            <p class="text-xs text-slate-300">Pemanfaatan Pembangkit Listrik Tenaga Surya (PLTS) atap, panas bumi (geothermal) di Dieng dan Kamojang, serta biofuel.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-white mb-2"><i class="fa-solid fa-recycle text-teal-400 mr-2"></i> Ekonomi Sirkular &amp; 3R</h5>
+                            <p class="text-xs text-slate-300">Pengembangan bank sampah komunitas, pengelolaan sampah terpadu, dan pembatasan penggunaan plastik sekali pakai.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-sm font-bold text-white mb-2"><i class="fa-solid fa-tree text-cyan-400 mr-2"></i> Kota Hijau &amp; RTH</h5>
+                            <p class="text-xs text-slate-300">Pembangunan Ruang Terbuka Hijau (RTH) perkotaan minimal 30%, transportasi masal rendah emisi, dan rehabilitasi mangrove.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Tantangan & Strategi -->
+                <div id="m-content-4" class="space-y-4 hidden">
+                    <img src="./asset/materi4.jpg" alt="Ilustrasi tantangan dan strategi pembangunan berkelanjutan" class="w-full h-auto object-contain rounded-2xl border border-amber-500/30 shadow-lg">
+                    <h4 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Tantangan &amp; Strategi Mitigasi
+                    </h4>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Dalam praktiknya, implementasi pembangunan berkelanjutan menghadapi berbagai tantangan kompleks yang memerlukan strategi geospasial yang tepat:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-xs font-bold text-rose-400 uppercase mb-1"><i class="fa-solid fa-circle-xmark mr-1"></i> Tantangan Utama</h5>
+                            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                                <li>Alih fungsi lahan pertanian subur menjadi kawasan industri/perumahan.</li>
+                                <li>Eksploitasi tambang ilegal yang merusak DAS dan ekosistem lokal.</li>
+                                <li>Kurangnya kesadaran masyarakat terhadap pengelolaan sampah harian.</li>
+                                <li>Dampak perubahan iklim global terhadap kenaikan air laut.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                            <h5 class="text-xs font-bold text-emerald-400 uppercase mb-1"><i class="fa-solid fa-circle-check mr-1"></i> Strategi &amp; Solusi</h5>
+                            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                                <li>Penegakan hukum Rencana Tata Ruang Wilayah (RTRW) secara ketat.</li>
+                                <li>Penerapan Analisis Mengenai Dampak Lingkungan (AMDAL) yang transparan.</li>
+                                <li>Edukasi lingkungan sejak dini melalui kurikulum geografi berbasis proyek.</li>
+                                <li>Transisi energi menuju net zero emission (NZE) tahun 2060.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 3: KUIS INTERAKTIF (15 SOAL LENGKAP) -->
+        <!-- ============================================== -->
+        <div id="slide-2" class="slide-container hide-slide w-full flex-col bg-transparent p-6 sm:p-10 slide-transition max-h-[85vh] overflow-y-auto">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-wider bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Evaluasi Pembelajaran Interaktif</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Kuis Geografi (15 Soal Lengkap)</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetQuiz()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition-all border border-slate-700">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reset Kuis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Category Selector Buttons -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="switchQuizCategory(1)" id="qcat-btn-1" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> Kategori 1: Pilihan Ganda (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory(2)" id="qcat-btn-2" disabled class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-slate-800 text-slate-500 border border-slate-700 opacity-50 cursor-not-allowed flex items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Kategori 2: Pengelompokan Pilar (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory(3)" id="qcat-btn-3" disabled class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-slate-800 text-slate-500 border border-slate-700 opacity-50 cursor-not-allowed flex items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Kategori 3: Mencocokkan Istilah (5 Soal)
+                </button>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- KATEGORI 1: PILIHAN GANDA (5 SOAL) -->
+            <!-- ============================================== -->
+            <div id="quiz-cat-1" class="space-y-6">
+                <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-xs text-emerald-300 font-medium">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Pilih jawaban A, B, C, atau D yang paling tepat untuk masing-masing dari 5 soal pilihan ganda berikut.
+                </div>
+                
+                <div id="mc-container" class="space-y-6">
+                    <!-- Dynamic MC Questions injected via JS -->
+                </div>
+                <button id="next-cat-1" onclick="switchQuizCategory(2)" class="hidden w-full sm:w-auto ml-auto bg-teal-600 hover:bg-teal-500 text-white font-extrabold px-6 py-3 rounded-xl text-sm transition-all shadow-lg">
+                    Berikutnya: Kategori 2 <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- KATEGORI 2: PENGELOMPOKKAN JAWABAN (5 SOAL) -->
+            <!-- ============================================== -->
+            <div id="quiz-cat-2" class="space-y-6 hidden">
+                <div class="bg-teal-500/10 border border-teal-500/20 p-4 rounded-xl text-xs text-teal-300 font-medium">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Pilih pilar pembangunan yang tepat (Sosial, Ekonomi, Ekologi, atau Tata Kelola) untuk mengelompokkan 5 aktivitas berikut.
+                </div>
+
+                <div id="group-container" class="space-y-4">
+                    <!-- Dynamic Grouping Questions injected via JS -->
+                </div>
+                <button id="next-cat-2" onclick="switchQuizCategory(3)" class="hidden w-full sm:w-auto ml-auto bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold px-6 py-3 rounded-xl text-sm transition-all shadow-lg">
+                    Berikutnya: Kategori 3 <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- KATEGORI 3: MENCOCOKKAN PASANGAN (5 SOAL) -->
+            <!-- ============================================== -->
+            <div id="quiz-cat-3" class="space-y-6 hidden">
+                <div class="bg-cyan-500/10 border border-cyan-500/20 p-4 rounded-xl text-xs text-cyan-300 font-medium">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Pasangkan istilah geografi dan pembangunan berikut dengan definisi operasional yang paling akurat.
+                </div>
+
+                <div id="match-container" class="space-y-4">
+                    <!-- Dynamic Matching Questions injected via JS -->
+                </div>
+                <button id="next-cat-3" onclick="goToSlide(3)" class="hidden w-full sm:w-auto ml-auto bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl text-sm transition-all shadow-lg">
+                    Lihat Nilai &amp; Sertifikat <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+            <span id="quiz-score-val" class="hidden">0</span>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 4: NILAI DAN SERTIFIKAT -->
+        <!-- ============================================== -->
+        <div id="slide-3" class="slide-container hide-slide w-full flex-col items-center bg-transparent p-6 sm:p-10 slide-transition max-h-[85vh] overflow-y-auto">
+            <div class="w-full max-w-3xl bg-slate-950/90 border border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl text-center">
+                <span class="text-emerald-400 text-xs font-bold uppercase tracking-wider">Hasil Evaluasi Pembelajaran</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">Sertifikat Penyelesaian</h2>
+                <p class="text-slate-400 text-sm mt-3">Selamat, Anda telah menyelesaikan seluruh kategori kuis.</p>
+
+                <div class="my-8 border-y border-emerald-500/30 py-8">
+                    <p class="text-xs uppercase tracking-widest text-slate-400">Diberikan kepada</p>
+                    <h3 id="certificate-name" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-2">-</h3>
+                    <p id="certificate-school" class="text-slate-300 text-sm mt-2">-</p>
+                    <p class="text-xs uppercase tracking-widest text-slate-400 mt-8">Nilai Akhir</p>
+                    <p id="certificate-score" class="text-5xl font-black text-white mt-2">0 / 100</p>
+                </div>
+
+                <button onclick="downloadCertificate()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/25">
+                    <i class="fa-solid fa-download mr-2"></i> Download Sertifikat
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Navigation Bar -->
+    <footer class="w-full bg-transparent border-t border-slate-800/40 py-4 px-6 flex justify-between items-center max-w-7xl mx-auto">
+        <button onclick="prevSlide()" id="prev-btn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Sebelumnya</span>
+        </button>
+
+        <div class="text-xs text-slate-400 font-medium hidden sm:block" id="footer-status-text">
+            Gunakan navigasi slide untuk berpindah halaman materi
+        </div>
+
+        <button onclick="nextSlide()" id="next-btn" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/25">
+            <span>Selanjutnya</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentSlideIndex = 0;
+        const totalSlides = 4;
+
+        // Quiz Data Bank (15 Questions total: 5 MC, 5 Grouping, 5 Matching)
+        const quizData = {
+            mc: [
+                {
+                    id: 1,
+                    question: "Berdasarkan Laporan Brundtland (1987), inti definisi pembangunan berkelanjutan adalah...",
+                    options: [
+                        { key: "A", text: "Memaksimalkan eksploitasi mineral untuk devisa negara", correct: false },
+                        { key: "B", text: "Memenuhi kebutuhan masa kini tanpa mengorbankan generasi mendatang", correct: true },
+                        { key: "C", text: "Memindahkan seluruh penduduk desa ke kawasan urban modern", correct: false },
+                        { key: "D", text: "Menghentikan total seluruh kegiatan industri manufaktur", correct: false }
+                    ],
+                    feedback: "Benar! Inti dari pembangunan berkelanjutan adalah keadilan antar-generasi."
+                },
+                {
+                    id: 2,
+                    question: "Pendekatan geografi yang sangat esensial dalam perencanaan pembangunan berkelanjutan adalah...",
+                    options: [
+                        { key: "A", text: "Pendekatan historis silsilah keluarga", correct: false },
+                        { key: "B", text: "Pendekatan spasial dan analisis keruangan wilayah", correct: true },
+                        { key: "C", text: "Pendekatan astronomi perbintangan", correct: false },
+                        { key: "D", text: "Pendekatan mitologi budaya lokal", correct: false }
+                    ],
+                    feedback: "Benar! Analisis spasial keruangan membantu menentukan kesesuaian tata ruang."
+                },
+                {
+                    id: 3,
+                    question: "Manakah contoh penerapan nyata dari Pilar Ekologi (Lingkungan)?",
+                    options: [
+                        { key: "A", text: "Pemberian subsidi bahan bakar fosil batu bara", correct: false },
+                        { key: "B", text: "Reboisasi hutan gundul dan pembuatan Ruang Terbuka Hijau (RTH)", correct: true },
+                        { key: "C", text: "Peningkatan volume kendaraan bermotor pribadi di kota besar", correct: false },
+                        { key: "D", text: "Konversi hutan mangrove menjadi tambak tanpa amdal", correct: false }
+                    ],
+                    feedback: "Benar! Reboisasi dan RTH adalah wujud nyata konservasi ekologis."
+                },
+                {
+                    id: 4,
+                    question: "Apa tujuan utama dari penerapan konsep Ekonomi Sirkular (Circular Economy)?",
+                    options: [
+                        { key: "A", text: "Menimbun sampah sebanyak-banyaknya di TPA akhir", correct: false },
+                        { key: "B", text: "Meminimalkan limbah melalui penggunaan kembali, perbaikan, dan daur ulang", correct: true },
+                        { key: "C", text: "Meningkatkan impor barang sekali pakai", correct: false },
+                        { key: "D", text: "Menghapuskan sama sekali sektor industri jasa", correct: false }
+                    ],
+                    feedback: "Benar! Ekonomi sirkular fokus pada minimisasi limbah dan efisiensi daur ulang."
+                },
+                {
+                    id: 5,
+                    question: "Tantangan terbesar dalam alih fungsi lahan subur di Indonesia adalah...",
+                    options: [
+                        { key: "A", text: "Penurunan kedaulatan pangan akibat konversi lahan pertanian", correct: true },
+                        { key: "B", text: "Bertambahnya jumlah pohon pelindung jalan", correct: false },
+                        { key: "C", text: "Penurunan suhu udara di pusat kota", correct: false },
+                        { key: "D", text: "Meningkatnya populasi satwa liar di pemukiman", correct: false }
+                    ],
+                    feedback: "Benar! Alih fungsi lahan sawah subur mengancam ketahanan dan kedaulatan pangan."
+                }
+            ],
+            grouping: [
+                {
+                    id: 1,
+                    text: "1. Program pelatihan keterampilan kerja dan pemberdayaan UMKM lokal",
+                    options: ["Sosial", "Ekonomi", "Ekologi", "Tata Kelola"],
+                    correct: "Ekonomi"
+                },
+                {
+                    id: 2,
+                    text: "2. Pemerataan akses layanan pendidikan dasar dan fasilitas kesehatan puskesmas",
+                    options: ["Sosial", "Ekonomi", "Ekologi", "Tata Kelola"],
+                    correct: "Sosial"
+                },
+                {
+                    id: 3,
+                    text: "3. Konservasi Daerah Aliran Sungai (DAS) dan perlindungan satwa endemik",
+                    options: ["Sosial", "Ekonomi", "Ekologi", "Tata Kelola"],
+                    correct: "Ekologi"
+                },
+                {
+                    id: 4,
+                    text: "4. Penegakan hukum RTRW dan transparansi perizinan AMDAL",
+                    options: ["Sosial", "Ekonomi", "Ekologi", "Tata Kelola"],
+                    correct: "Tata Kelola"
+                },
+                {
+                    id: 5,
+                    text: "5. Pembangunan fasilitas air bersih sanitasi layak bagi masyarakat pedesaan",
+                    options: ["Sosial", "Ekonomi", "Ekologi", "Tata Kelola"],
+                    correct: "Sosial"
+                }
+            ],
+            matching: [
+                {
+                    id: 1,
+                    term: "Daya Dukung Lingkungan (Carrying Capacity)",
+                    choices: [
+                        "Kemampuan lingkungan untuk mendukung kehidupan makhluk hidup secara seimbang",
+                        "Jumlah keuntungan bersih perusahaan dalam setahun",
+                        "Tingkat polusi udara di pusat kota metropolitan",
+                        "Kecepatan angin muson barat di lautan"
+                    ],
+                    correct: "Kemampuan lingkungan untuk mendukung kehidupan makhluk hidup secara seimbang"
+                },
+                {
+                    id: 2,
+                    term: "Pembangunan Rendah Karbon (Low Carbon Development)",
+                    choices: [
+                        "Peningkatan jumlah kendaraan bermotor berbahan bakar bensin",
+                        "Inisiatif pembangunan ekonomi yang menekan emisi gas rumah kaca seminimal mungkin",
+                        "Penebangan hutan secara tebang pilih komersial",
+                        "Penggunaan batu bara sebagai sumber listrik utama"
+                    ],
+                    correct: "Inisiatif pembangunan ekonomi yang menekan emisi gas rumah kaca seminimal mungkin"
+                },
+                {
+                    id: 3,
+                    term: "Analisis Mengenai Dampak Lingkungan (AMDAL)",
+                    choices: [
+                        "Kajian mengenai dampak besar dan penting suatu usaha terhadap lingkungan hidup",
+                        "Daftar harga bahan pokok di pasar tradisional",
+                        "Perhitungan jumlah penduduk miskin di suatu kabupaten",
+                        "Peta jalur evakuasi bencana gempa bumi"
+                    ],
+                    correct: "Kajian mengenai dampak besar dan penting suatu usaha terhadap lingkungan hidup"
+                },
+                {
+                    id: 4,
+                    term: "Ruang Terbuka Hijau (RTH)",
+                    choices: [
+                        "Kawasan dalam kota berupa jalur hijau atau taman yang berbentuk memanjang atau mengelompok",
+                        "Gedung pencakar langit berlapis kaca biru",
+                        "Kawasan industri berat di pinggir pelabuhan",
+                        "Jalan tol bebas hambatan antarkota"
+                    ],
+                    correct: "Kawasan dalam kota berupa jalur hijau atau taman yang berbentuk memanjang atau mengelompok"
+                },
+                {
+                    id: 5,
+                    term: "Keadilan Antar-Generasi (Intergenerational Equity)",
+                    choices: [
+                        "Prinsip bahwa generasi saat ini harus menjaga sumber daya agar tetap lestari untuk generasi masa depan",
+                        "Pembagian warisan harta keluarga secara merata",
+                        "Subsidi listrik gratis bagi industri besar",
+                        "Perpindahan penduduk usia produktif antarprovinsi"
+                    ],
+                    correct: "Prinsip bahwa generasi saat ini harus menjaga sumber daya agar tetap lestari untuk generasi masa depan"
+                }
+            ]
+        };
+
+        // User answers state storage
+        let userAnswers = {
+            mc: {},
+            grouping: {},
+            matching: {}
+        };
+
+        window.onload = function() {
+            renderQuizElements();
+            updateQuizProgress();
+        };
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            if (index > 0 && !validateProfile()) return;
+            if (index === 3 && !isQuizComplete()) {
+                alert('Selesaikan seluruh 15 soal terlebih dahulu.');
+                return;
+            }
+            currentSlideIndex = index;
+
+            for (let i = 0; i < totalSlides; i++) {
+                const s = document.getElementById(`slide-${i}`);
+                s.classList.remove('active-slide');
+                s.classList.add('hide-slide');
+
+                const ind = document.getElementById(`indicator-${i}`);
+                if (ind) {
+                    ind.classList.remove('bg-emerald-600', 'text-white', 'shadow');
+                    ind.classList.add('text-slate-400');
+                }
+            }
+
+            const active = document.getElementById(`slide-${currentSlideIndex}`);
+            active.classList.remove('hide-slide');
+            active.classList.add('active-slide');
+
+            const activeInd = document.getElementById(`indicator-${currentSlideIndex}`);
+            if (activeInd) {
+                activeInd.classList.remove('text-slate-400');
+                activeInd.classList.add('bg-emerald-600', 'text-white', 'shadow');
+            }
+
+            document.getElementById('slide-counter-badge').innerText = `Slide ${currentSlideIndex + 1} / ${totalSlides}`;
+            document.getElementById('prev-btn').disabled = currentSlideIndex === 0;
+
+            const nextBtn = document.getElementById('next-btn');
+            if (currentSlideIndex === totalSlides - 1) {
+                nextBtn.innerHTML = `<span>Selesai</span> <i class="fa-solid fa-check"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Selanjutnya</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+
+            if (currentSlideIndex === 3) updateCertificate();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateProfile() {
+            const namaInput = document.getElementById('input-nama');
+            const sekolahInput = document.getElementById('input-sekolah');
+            const errorMessage = document.getElementById('profile-error');
+            const isValid = namaInput.value.trim() !== '' && sekolahInput.value.trim() !== '';
+
+            errorMessage.classList.toggle('hidden', isValid);
+            namaInput.classList.toggle('border-rose-500', namaInput.value.trim() === '');
+            sekolahInput.classList.toggle('border-rose-500', sekolahInput.value.trim() === '');
+
+            if (!isValid) {
+                if (namaInput.value.trim() === '') namaInput.focus();
+                else sekolahInput.focus();
+            }
+
+            return isValid;
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                goToSlide(currentSlideIndex + 1);
+            } else {
+                alert(`Terima kasih! Media pembelajaran telah selesai dieksplorasi oleh ${document.getElementById('input-nama').value}.`);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                goToSlide(currentSlideIndex - 1);
+            }
+        }
+
+        // Slide 2: Materi Tab Switcher
+        function switchMateriTab(tabNum) {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`m-content-${i}`).classList.add('hidden');
+                document.getElementById(`m-btn-${i}`).className = "cursor-pointer bg-slate-800/50 border-2 border-slate-700 rounded-2xl p-5 transition-all shadow-md group";
+            }
+            document.getElementById(`m-content-${tabNum}`).classList.remove('hidden');
+            
+            let borderColor = "border-emerald-500";
+            if (tabNum === 2) borderColor = "border-teal-500";
+            if (tabNum === 3) borderColor = "border-cyan-500";
+            if (tabNum === 4) borderColor = "border-amber-500";
+
+            document.getElementById(`m-btn-${tabNum}`).className = `cursor-pointer bg-slate-800/90 border-2 ${borderColor} rounded-2xl p-5 transition-all shadow-md group`;
+        }
+
+        // Slide 3: Quiz Category Switcher
+        function switchQuizCategory(catNum) {
+            if (catNum === 2 && !isCategoryComplete(1)) {
+                alert('Selesaikan semua soal Kategori 1 terlebih dahulu.');
+                return;
+            }
+            if (catNum === 3 && !isCategoryComplete(2)) {
+                alert('Selesaikan semua soal Kategori 2 terlebih dahulu.');
+                return;
+            }
+
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`quiz-cat-${i}`).classList.add('hidden');
+                document.getElementById(`qcat-btn-${i}`).className = "px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-2";
+            }
+            document.getElementById(`quiz-cat-${catNum}`).classList.remove('hidden');
+            document.getElementById(`qcat-btn-${catNum}`).className = "px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow flex items-center gap-2";
+        }
+
+        function isCategoryComplete(categoryNum) {
+            const answers = categoryNum === 1 ? userAnswers.mc : categoryNum === 2 ? userAnswers.grouping : userAnswers.matching;
+            const questionCount = categoryNum === 1 ? quizData.mc.length : categoryNum === 2 ? quizData.grouping.length : quizData.matching.length;
+            return Object.keys(answers).length === questionCount;
+        }
+
+        function isQuizComplete() {
+            return isCategoryComplete(1) && isCategoryComplete(2) && isCategoryComplete(3);
+        }
+
+        function updateQuizProgress() {
+            const categoryOneComplete = isCategoryComplete(1);
+            const categoryTwoComplete = isCategoryComplete(2);
+            const categoryThreeComplete = isCategoryComplete(3);
+            const allCategoriesComplete = categoryOneComplete && categoryTwoComplete && categoryThreeComplete;
+            const categoryTwoButton = document.getElementById('qcat-btn-2');
+            const categoryThreeButton = document.getElementById('qcat-btn-3');
+            const certificateButton = document.getElementById('indicator-3');
+            const nextCategoryOneButton = document.getElementById('next-cat-1');
+            const nextCategoryTwoButton = document.getElementById('next-cat-2');
+            const nextCategoryThreeButton = document.getElementById('next-cat-3');
+
+            categoryTwoButton.disabled = !categoryOneComplete;
+            categoryThreeButton.disabled = !categoryTwoComplete;
+            categoryTwoButton.classList.toggle('opacity-50', !categoryOneComplete);
+            categoryTwoButton.classList.toggle('cursor-not-allowed', !categoryOneComplete);
+            categoryThreeButton.classList.toggle('opacity-50', !categoryTwoComplete);
+            categoryThreeButton.classList.toggle('cursor-not-allowed', !categoryTwoComplete);
+            categoryTwoButton.classList.toggle('text-slate-500', !categoryOneComplete);
+            categoryTwoButton.classList.toggle('text-slate-300', categoryOneComplete);
+            categoryThreeButton.classList.toggle('text-slate-500', !categoryTwoComplete);
+            categoryThreeButton.classList.toggle('text-slate-300', categoryTwoComplete);
+            categoryTwoButton.querySelector('i').className = categoryOneComplete ? 'fa-solid fa-layer-group' : 'fa-solid fa-lock';
+            categoryThreeButton.querySelector('i').className = categoryTwoComplete ? 'fa-solid fa-puzzle-piece' : 'fa-solid fa-lock';
+            if (nextCategoryOneButton) nextCategoryOneButton.classList.toggle('hidden', !categoryOneComplete);
+            if (nextCategoryTwoButton) nextCategoryTwoButton.classList.toggle('hidden', !categoryTwoComplete);
+            if (nextCategoryThreeButton) nextCategoryThreeButton.classList.toggle('hidden', !categoryThreeComplete);
+            if (certificateButton) {
+                certificateButton.disabled = !allCategoriesComplete;
+                certificateButton.classList.toggle('opacity-50', !allCategoriesComplete);
+                certificateButton.classList.toggle('cursor-not-allowed', !allCategoriesComplete);
+            }
+        }
+
+        // Render 15 Quiz Questions dynamically
+        function renderQuizElements() {
+            // 1. Render MC (5 questions)
+            let mcHTML = "";
+            quizData.mc.forEach((q, idx) => {
+                let optionsHTML = "";
+                q.options.forEach(opt => {
+                    optionsHTML += `
+                        <button onclick="answerMC(${q.id}, '${opt.key}', ${opt.correct})" id="mc-btn-${q.id}-${opt.key}" class="w-full text-left bg-slate-900 hover:bg-slate-800 border border-slate-800 p-3.5 rounded-xl text-xs sm:text-sm text-slate-200 transition-all flex items-center justify-between">
+                            <span><b>${opt.key}.</b> ${opt.text}</span>
+                            <span class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center text-xs font-bold shrink-0">${opt.key}</span>
+                        </button>
+                    `;
+                });
+                mcHTML += `
+                    <div class="bg-slate-950/70 border border-slate-800 p-5 rounded-2xl">
+                        <p class="text-xs font-bold text-emerald-400 mb-1.5">Soal Pilihan Ganda ${idx + 1} / 5</p>
+                        <h4 class="text-sm sm:text-base font-bold text-white mb-4">${q.question}</h4>
+                        <div class="space-y-2.5 mb-3">${optionsHTML}</div>
+                        <div id="feedback-mc-${q.id}" class="text-xs font-bold hidden"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('mc-container').innerHTML = mcHTML;
+
+            // 2. Render Grouping (5 questions)
+            let groupHTML = "";
+            quizData.grouping.forEach((g, idx) => {
+                let btnOptions = "";
+                g.options.forEach(opt => {
+                    btnOptions += `<button onclick="answerGroup(${g.id}, '${opt}')" id="grp-btn-${g.id}-${opt}" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300 border border-slate-700 transition-all">${opt}</button>`;
+                });
+                groupHTML += `
+                    <div class="bg-slate-950/70 border border-slate-800 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <p class="text-xs font-bold text-teal-400 mb-1">Pengelompokan Pilar ${idx + 1} / 5</p>
+                            <h4 class="text-sm font-bold text-white">${g.text}</h4>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">${btnOptions}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('group-container').innerHTML = groupHTML;
+
+            // 3. Render Matching (5 questions)
+            let matchHTML = "";
+            quizData.matching.forEach((m, idx) => {
+                let selectOptions = `<option value="">-- Pilih Definisi yang Paling Tepat --</option>`;
+                // Shuffle or list choices
+                m.choices.forEach(choice => {
+                    selectOptions += `<option value="${choice}">${choice}</option>`;
+                });
+                matchHTML += `
+                    <div class="bg-slate-950/70 border border-slate-800 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="max-w-md">
+                            <p class="text-xs font-bold text-cyan-400 mb-1">Mencocokkan Istilah ${idx + 1} / 5</p>
+                            <h4 class="text-sm font-bold text-white">${m.term}</h4>
+                        </div>
+                        <div class="w-full md:w-96">
+                            <select id="match-sel-${m.id}" onchange="answerMatching(${m.id})" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-cyan-500">
+                                ${selectOptions}
+                            </select>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('match-container').innerHTML = matchHTML;
+        }
+
+        // Handler for MC
+        function answerMC(qId, selectedKey, isCorrect) {
+            userAnswers.mc[qId] = isCorrect;
+            
+            // Highlight selected option
+            const qObj = quizData.mc.find(x => x.id === qId);
+            qObj.options.forEach(opt => {
+                const btn = document.getElementById(`mc-btn-${qId}-${opt.key}`);
+                if (opt.key === selectedKey) {
+                    btn.className = isCorrect 
+                        ? "w-full text-left bg-emerald-950/60 border border-emerald-500 p-3.5 rounded-xl text-xs sm:text-sm text-emerald-200 font-bold flex items-center justify-between shadow"
+                        : "w-full text-left bg-rose-950/60 border border-rose-500 p-3.5 rounded-xl text-xs sm:text-sm text-rose-200 font-bold flex items-center justify-between shadow";
+                } else {
+                    btn.className = "w-full text-left bg-slate-900 opacity-60 border border-slate-800 p-3.5 rounded-xl text-xs sm:text-sm text-slate-400 flex items-center justify-between";
+                }
+            });
+
+            const fb = document.getElementById(`feedback-mc-${qId}`);
+            fb.classList.remove('hidden');
+            fb.innerHTML = isCorrect 
+                ? `<span class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> ${qObj.feedback}</span>`
+                : `<span class="text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> Kurang tepat. Silakan tinjau kembali materi pada Slide 2.</span>`;
+
+            updateLiveScore();
+            updateQuizProgress();
+        }
+
+        // Handler for Grouping
+        function answerGroup(gId, selectedCat) {
+            const gObj = quizData.grouping.find(x => x.id === gId);
+            const isCorrect = (selectedCat === gObj.correct);
+            userAnswers.grouping[gId] = isCorrect;
+
+            gObj.options.forEach(opt => {
+                const btn = document.getElementById(`grp-btn-${gId}-${opt}`);
+                if (opt === selectedCat) {
+                    btn.className = isCorrect
+                        ? "py-2 px-3 bg-emerald-600 rounded-xl text-xs font-bold text-white shadow"
+                        : "py-2 px-3 bg-rose-600 rounded-xl text-xs font-bold text-white shadow";
+                } else {
+                    btn.className = "py-2 px-3 bg-slate-800 opacity-50 rounded-xl text-xs font-bold text-slate-400 border border-slate-700";
+                }
+            });
+
+            updateLiveScore();
+            updateQuizProgress();
+        }
+
+        // Handler for Matching
+        function answerMatching(mId) {
+            const selectVal = document.getElementById(`match-sel-${mId}`).value;
+            const mObj = quizData.matching.find(x => x.id === mId);
+            const isCorrect = (selectVal === mObj.correct);
+            if (selectVal === '') delete userAnswers.matching[mId];
+            else userAnswers.matching[mId] = isCorrect;
+
+            updateLiveScore();
+            updateQuizProgress();
+        }
+
+        function updateLiveScore() {
+            let score = 0;
+            // 5 MC questions = 4 pts each (total 20)
+            Object.values(userAnswers.mc).forEach(val => { if(val) score += 4; });
+            // 5 Grouping questions = 4 pts each (total 20)
+            Object.values(userAnswers.grouping).forEach(val => { if(val) score += 4; });
+            // 5 Matching questions = 12 pts each (total 60) -> Total 100
+            Object.values(userAnswers.matching).forEach(val => { if(val) score += 12; });
+
+            document.getElementById('quiz-score-val').innerText = score;
+        }
+
+        function submitAllQuiz() {
+            if (!isQuizComplete()) return;
+            updateLiveScore();
+            goToSlide(3);
+        }
+
+        function updateCertificate() {
+            document.getElementById('certificate-name').innerText = document.getElementById('input-nama').value;
+            document.getElementById('certificate-school').innerText = document.getElementById('input-sekolah').value;
+            document.getElementById('certificate-score').innerText = `${document.getElementById('quiz-score-val').innerText} / 100`;
+        }
+
+        function downloadCertificate() {
+            updateCertificate();
+            const nama = document.getElementById('input-nama').value;
+            const sekolah = document.getElementById('input-sekolah').value;
+            const skor = document.getElementById('quiz-score-val').innerText;
+            const certificateHtml = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Sertifikat ${nama}</title><style>body{font-family:Arial,sans-serif;background:#ecfdf5;color:#0f172a;padding:48px;text-align:center}.certificate{border:8px solid #059669;padding:56px;max-width:800px;margin:auto;background:white}h1{color:#047857;font-size:38px}h2{font-size:30px;margin:32px 0 8px}p{font-size:18px}.score{font-size:32px;font-weight:bold;color:#047857}</style></head><body><div class="certificate"><p>SERTIFIKAT PENYELESAIAN</p><h1>Media Pembelajaran Geografi</h1><p>Diberikan kepada</p><h2>${nama}</h2><p>${sekolah}</p><p>atas penyelesaian seluruh kategori kuis Implementasi Pembangunan Berkelanjutan.</p><p class="score">Nilai Akhir: ${skor} / 100</p></div></body></html>`;
+            const blob = new Blob([certificateHtml], { type: 'text/html' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `sertifikat-${nama.replace(/\s+/g, '-').toLowerCase()}.html`;
+            link.click();
+            URL.revokeObjectURL(downloadUrl);
+        }
+
+        function resetQuiz() {
+            userAnswers = { mc: {}, grouping: {}, matching: {} };
+            document.getElementById('quiz-score-val').innerText = '0';
+            renderQuizElements();
+            switchQuizCategory(1);
+            updateQuizProgress();
+        }
+    </script>
+
+</body>
+</html>
